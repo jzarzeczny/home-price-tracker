@@ -19,7 +19,6 @@ export const useAddLink = routeAction$(async (props) => {
     const html = await webside.text();
 
     const $ = await load(html);
-    console.log($.html());
     const firstImage = $("source").first();
     const imageUrl = firstImage.attr("srcset");
     const title = $('h1[data-cy="adPageAdTitle"]').text();
@@ -42,7 +41,6 @@ export default component$(() => {
   const action = useAddLink();
   const houseData = useGetData();
 
-  // console.log(data.value);
   return (
     <>
       <h1>Hi 👋</h1>
