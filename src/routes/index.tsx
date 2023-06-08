@@ -45,13 +45,13 @@ export default component$(() => {
     <>
       <h1>Hi 👋</h1>
 
-      <h3>Lets add some house</h3>
+      <h3>Twoje zapisane domy</h3>
       <Form action={action}>
         <div>
-          <label>Name</label>
+          <label>URL mieszkania/domu</label>
           <input type="text" name="link" />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">Dodaj</button>
       </Form>
       <section class={styles.houses}>
         {houseData.value?.map((data) => (
@@ -63,7 +63,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "House tracker",
   meta: [
     {
       name: "description",
