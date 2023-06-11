@@ -50,3 +50,7 @@ export const getPrices = async (userId:string):Promise<PriceDBReturn[]>=>{
 
       return prices.data as PriceDBReturn[]
 }
+
+export const deleteHouse = async(houseId:string)=>{
+  await supabaseClient.from("houses").delete().eq("id", houseId)
+}
