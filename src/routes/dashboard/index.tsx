@@ -15,6 +15,7 @@ import {
   addInitialPrice,
   getHouses,
   getPrices,
+  deleteHouse,
 } from "~/server/db/queries";
 import { margeHousesWithPrices } from "~/lib/utils/data";
 
@@ -46,9 +47,19 @@ export const useAddLink = routeAction$(async (props) => {
   }
 });
 
+export const useDeleteHouse = routeAction$(async (props) => {
+  const id = props.houseId as string;
+  try {
+    await deleteHouse(id);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default component$(() => {
   const userSession = useContext(UserSessionContext);
-  const action = useAddLink();
+  const addAction = useAddLink();
+  const deleteAction = useDeleteHouse();
   //TODO perform operation in pageLoader
   const userHouse = useResource$(async ({ track }) => {
     track(() => userSession.userId);
@@ -66,7 +77,7 @@ export default component$(() => {
   return (
     <>
       <h3 class={styles.header}>Twoje zapisane domy</h3>
-      <Form class={styles.addHouseForm} action={action}>
+      <Form class={styles.addHouseForm} action={addAction}>
         <div class={styles.formControl}>
           <label>URL mieszkania/domu</label>
           <input type="text" name="link" />
@@ -80,7 +91,11 @@ export default component$(() => {
         onResolved={(housesData) => (
           <section class={styles.houses}>
             {housesData?.map((house) => (
-              <HouseCard key={house.id} data={house} />
+              <HouseCard
+                key={house.id}
+                data={house}
+                deleteAction={deleteAction}
+              />
             ))}
           </section>
         )}
