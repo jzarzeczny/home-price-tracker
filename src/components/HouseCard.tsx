@@ -1,12 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 import styles from "./HouseCard.module.scss";
-import type { HouseCardWithIdInterface } from "~/interfaces";
+import type { HouseCardInterface } from "~/interfaces";
 
-interface HouseCardInterface {
-  data: HouseCardWithIdInterface;
+interface HouseCard {
+  data: HouseCardInterface;
 }
 
-export const HouseCard = component$(({ data }: HouseCardInterface) => {
+export const HouseCard = component$(({ data }: HouseCard) => {
   return (
     <a href={data.link} key={data.id} class={styles.container}>
       <div class={styles.imageContainer}>

@@ -7,29 +7,39 @@ import {
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import styles from "./index.module.scss";
 import { HouseCard } from "~/components/HouseCard";
-import type { HouseCardWithIdInterface } from "~/interfaces";
-import { supabaseClient } from "~/server/db/client";
-import { load } from "cheerio";
+import type { HouseCardInterface } from "~/interfaces";
 import { UserSessionContext } from "~/root";
+import { parseOtoDom } from "~/lib/parsing/parsingWebsite";
+import {
+  addHouse,
+  addInitialPrice,
+  getHouses,
+  getPrices,
+} from "~/server/db/queries";
+import { margeHousesWithPrices } from "~/lib/utils/data";
 
 export const useAddLink = routeAction$(async (props) => {
   try {
-    const webside = await fetch(props.link as string);
-    const html = await webside.text();
+    const link = props.link as string;
+    const userId = props.userId as string;
+    const website = await fetch(props.link as string);
 
-    const $ = await load(html);
-    const firstImage = $("source").first();
-    const imageUrl = firstImage.attr("srcset");
-    const title = $('h1[data-cy="adPageAdTitle"]').text();
-    const price = $('strong[data-cy="adPageHeaderPrice"]').text();
-    const pricePerM = $('div[aria-label="Cena za metr kwadratowy"]').text();
-    await supabaseClient.from("houses").insert({
-      title,
-      imageUrl,
-      price,
-      pricePerM,
-      link: props.link,
-      userId: props.userId,
+    const parsedData = await parseOtoDom(website);
+    const houseObject = await addHouse({
+      imageUrl: parsedData.imageUrl,
+      title: parsedData.title,
+      link,
+      userId,
+    });
+    const house = houseObject.data?.pop();
+    if (!house) {
+      return;
+    }
+    await addInitialPrice({
+      userId: userId,
+      houseId: house.id,
+      price: parsedData.price,
+      pricePerM: parsedData.pricePerM,
     });
   } catch (error) {
     console.log(error);
@@ -39,13 +49,18 @@ export const useAddLink = routeAction$(async (props) => {
 export default component$(() => {
   const userSession = useContext(UserSessionContext);
   const action = useAddLink();
+  //TODO perform operation in pageLoader
   const userHouse = useResource$(async ({ track }) => {
     track(() => userSession.userId);
-    const data = await supabaseClient
-      .from("houses")
-      .select("*")
-      .eq("userId", userSession.userId);
-    return data;
+    // TODO use one query to pull this data
+    const housesData = await getHouses(userSession.userId);
+    const priceData = await getPrices(userSession.userId);
+
+    const houses: HouseCardInterface[] = margeHousesWithPrices(
+      housesData,
+      priceData
+    );
+    return houses;
   });
 
   return (
@@ -64,11 +79,8 @@ export default component$(() => {
         onPending={() => <p>Loading...</p>}
         onResolved={(housesData) => (
           <section class={styles.houses}>
-            {housesData?.data?.map((house) => (
-              <HouseCard
-                key={house.id}
-                data={house as HouseCardWithIdInterface}
-              />
+            {housesData?.map((house) => (
+              <HouseCard key={house.id} data={house} />
             ))}
           </section>
         )}
