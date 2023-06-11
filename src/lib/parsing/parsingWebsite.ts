@@ -13,8 +13,6 @@ interface ParsedWebData {
 export const parseWebsite = async (website: Response, link: string) => {
   const url = new URL(link).host;
   let parsedData: Promise<ParsedWebData>;
-  console.log(url);
-  console.log(olxUrl);
   if (url.includes(otoDomUrl)) {
     parsedData = parseOtoDom(website);
   } else if (url.includes(olxUrl)) {
@@ -59,7 +57,6 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
       return $(element).text().includes("Cena za m²");
     })
     .text();
-  console.log(`\n\n${pricePerM}bla\n\n`);
   if (!imageUrl) {
     throw new Error("Image does not exists");
   }
@@ -68,7 +65,6 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
 };
 
 const extractPricePerM = (text: string): string => {
-  console.log(text);
   const regex = /Cena za m²: (.*?)$/;
   const match = text.match(regex) as string[];
   const extractedValue = match[1];

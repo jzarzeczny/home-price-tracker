@@ -26,7 +26,7 @@ export const useAddLink = routeAction$(async (props) => {
     const website = await fetch(props.link as string);
 
     const parsedData = await parseWebsite(website, link);
-    console.log(parsedData);
+
     const houseObject = await addHouse({
       imageUrl: parsedData.imageUrl,
       title: parsedData.title,
