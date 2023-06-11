@@ -37,7 +37,7 @@ export default component$(() => {
           UserSession.isLoggedIn = true;
         }
         if (event === "SIGNED_OUT") {
-          UserSession.userId = "session.user.id;";
+          UserSession.userId = "";
           UserSession.isLoggedIn = false;
         }
       }

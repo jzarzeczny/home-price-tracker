@@ -29,7 +29,7 @@ export default component$(() => {
           </li>
         ))}
       </nav>
-      {userSession.userId ? (
+      {userSession.isLoggedIn ? (
         <button class={styles.button} onClick$={handleLogOut}>
           Logout
         </button>
