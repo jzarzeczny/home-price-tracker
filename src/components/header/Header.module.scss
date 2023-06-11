@@ -1,0 +1,17 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+}
+.navigation {
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.button {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid black;
+  border-radius: 8px;
+}

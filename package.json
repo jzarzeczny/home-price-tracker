@@ -19,7 +19,7 @@
     "lint": "eslint \"src/**/*.ts*\"",
     "preview": "qwik build preview && vite preview --open",
     "start": "vite --open --mode ssr",
-    "update-types": "npx supabase gen types typescript --project-id eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55aW1qc3VydGNkY2N0Z294anJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODU5ODUyNjEsImV4cCI6MjAwMTU2MTI2MX0.qm6sZPFDAiI2Zk7RQ2q5fvUkIQzRbHllnNykMowMsMM > src/interfaces/supabase.ts",
+    "update-types": "npx supabase gen types typescript --project-id nyimjsurtcdcctgoxjrs > src/interfaces/supabase.ts",
     "qwik": "qwik"
   },
   "devDependencies": {

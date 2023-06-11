@@ -1,16 +1,54 @@
-import { component$ } from '@builder.io/qwik';
-import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
-import { RouterHead } from './components/router-head/router-head';
+import {
+  component$,
+  useVisibleTask$,
+  useStore,
+  useContextProvider,
+  createContextId,
+} from "@builder.io/qwik";
+import {
+  QwikCityProvider,
+  RouterOutlet,
+  ServiceWorkerRegister,
+} from "@builder.io/qwik-city";
+import { RouterHead } from "./components/router-head/router-head";
 
-import './global.css';
+import "./global.css";
+import { supabaseClient } from "./server/db/client";
+import type { Session } from "supabase-auth-helpers-qwik";
+import type { AuthChangeEvent } from "@supabase/supabase-js";
+
+export const UserSessionContext = createContextId<UserSession>("user-session");
+
+export type UserSession = {
+  userId: string;
+  isLoggedIn: boolean;
+};
 
 export default component$(() => {
-  /**
-   * The root of a QwikCity site always start with the <QwikCityProvider> component,
-   * immediately followed by the document's <head> and <body>.
-   *
-   * Dont remove the `<head>` and `<body>` elements.
-   */
+  const UserSession: UserSession = useStore({
+    userId: "",
+    isLoggedIn: false,
+  });
+  useVisibleTask$(async () => {
+    const { data: authListener } = await supabaseClient.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null) => {
+        if (event === "SIGNED_IN") {
+          UserSession.userId = session?.user.id || "";
+          UserSession.isLoggedIn = true;
+        }
+        if (event === "SIGNED_OUT") {
+          UserSession.userId = "session.user.id;";
+          UserSession.isLoggedIn = false;
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  });
+
+  useContextProvider(UserSessionContext, UserSession);
 
   return (
     <QwikCityProvider>
