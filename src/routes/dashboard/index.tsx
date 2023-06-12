@@ -9,13 +9,13 @@ import styles from "./index.module.scss";
 import { HouseCard } from "~/components/HouseCard";
 import type { HouseCardInterface } from "~/interfaces";
 import { UserSessionContext } from "~/root";
-import { parseOtoDom } from "~/lib/parsing/parsingWebsite";
+import { parseWebsite } from "~/lib/parsing/parsingWebsite";
 import {
-  addHouse,
-  addInitialPrice,
   getHouses,
   getPrices,
   deleteHouse,
+  addHouse,
+  addInitialPrice,
 } from "~/server/db/queries";
 import { margeHousesWithPrices } from "~/lib/utils/data";
 
@@ -25,7 +25,8 @@ export const useAddLink = routeAction$(async (props) => {
     const userId = props.userId as string;
     const website = await fetch(props.link as string);
 
-    const parsedData = await parseOtoDom(website);
+    const parsedData = await parseWebsite(website, link);
+
     const houseObject = await addHouse({
       imageUrl: parsedData.imageUrl,
       title: parsedData.title,
