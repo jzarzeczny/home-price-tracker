@@ -14,7 +14,7 @@ interface HouseCard {
 export const HouseCard = component$(
   ({ data, deleteAction, refetchAction, userId }: HouseCard) => {
     return (
-      <a href={data.link} key={data.id} class={styles.container}>
+      <div key={data.id} class={styles.container}>
         <div class={styles.imageContainer}>
           <img
             src={data.imageUrl}
@@ -29,6 +29,9 @@ export const HouseCard = component$(
           <span>{data.price}</span>
           <span>{data.pricePerM}</span>
           <div class={styles.buttonsContainer}>
+            <a href={data.link} target="_blank">
+              Strona
+            </a>
             <Form action={refetchAction}>
               <input type="hidden" name="houseId" value={data.id} />
               <input type="hidden" name="houseUrl" value={data.link} />
@@ -41,7 +44,7 @@ export const HouseCard = component$(
             </Form>
           </div>
         </div>
-      </a>
+      </div>
     );
   }
 );

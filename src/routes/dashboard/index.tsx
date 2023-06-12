@@ -46,6 +46,7 @@ export const useAddLink = routeAction$(async (props) => {
     });
   } catch (error) {
     console.log(error);
+    return "Niepoprawy link";
   }
 });
 
@@ -73,6 +74,7 @@ export const useRefetchHouse = routeAction$(async (props) => {
     });
   } catch (error) {
     console.log(error);
+    return "Zły link";
   }
 });
 
@@ -105,7 +107,11 @@ export default component$(() => {
         </div>
         <input type="hidden" value={userSession.userId} name="userId" />
         <button type="submit">Dodaj</button>
+        {addAction.value && (
+          <p class={styles.error}>{addAction.value as string}</p>
+        )}
       </Form>
+
       <Resource
         value={userHouse}
         onPending={() => <p>Loading...</p>}

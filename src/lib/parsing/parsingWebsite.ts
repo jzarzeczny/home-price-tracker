@@ -34,7 +34,7 @@ export const parseOtoDom = async (
   const title = $('h1[data-cy="adPageAdTitle"]').text();
   const price = $('strong[data-cy="adPageHeaderPrice"]').text();
   const pricePerM = $('div[aria-label="Cena za metr kwadratowy"]').text();
-  if (!imageUrl) {
+  if (!imageUrl || !title || !price || !pricePerM) {
     throw new Error("Image does not exists");
   }
   return {
@@ -57,7 +57,7 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
       return $(element).text().includes("Cena za m²");
     })
     .text();
-  if (!imageUrl) {
+  if (!imageUrl || !title || !price || !pricePerM) {
     throw new Error("Image does not exists");
   }
 
