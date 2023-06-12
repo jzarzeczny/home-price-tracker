@@ -16,6 +16,7 @@ import {
   deleteHouse,
   addHouse,
   addInitialPrice,
+  addPrice,
 } from "~/server/db/queries";
 import { margeHousesWithPrices } from "~/lib/utils/data";
 
@@ -57,10 +58,29 @@ export const useDeleteHouse = routeAction$(async (props) => {
   }
 });
 
+export const useRefetchHouse = routeAction$(async (props) => {
+  const houseId = props.houseId as string;
+  const houseUrl = props.houseUrl as string;
+  const userId = props.userId as string;
+  try {
+    const website = await fetch(houseUrl);
+    const parsedData = await parseWebsite(website, houseUrl);
+    await addPrice({
+      userId,
+      houseId,
+      price: parsedData.price,
+      pricePerM: parsedData.pricePerM,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default component$(() => {
   const userSession = useContext(UserSessionContext);
   const addAction = useAddLink();
   const deleteAction = useDeleteHouse();
+  const refetchAction = useRefetchHouse();
   //TODO perform operation in pageLoader
   const userHouse = useResource$(async ({ track }) => {
     track(() => userSession.userId);
@@ -96,6 +116,8 @@ export default component$(() => {
                 key={house.id}
                 data={house}
                 deleteAction={deleteAction}
+                refetchAction={refetchAction}
+                userId={userSession.userId}
               />
             ))}
           </section>
