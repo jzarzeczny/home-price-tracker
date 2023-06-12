@@ -33,6 +33,15 @@ export const addInitialPrice = async (priceData: PriceDataInterface) => {
   });
 };
 
+export const addPrice = async (priceData: PriceDataInterface) => {
+  return await supabaseClient.from("prices").insert({
+    userId: priceData.userId,
+    houseId: priceData.houseId,
+    price: priceData.price,
+    pricePerM: priceData.pricePerM,
+  });
+};
+
 export const getHouses = async (userId: string): Promise<HouseDBReturn[]> => {
   const houses = await supabaseClient
     .from("houses")

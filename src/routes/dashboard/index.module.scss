@@ -16,6 +16,9 @@
 }
 
 .houses {
-  max-width: 1200px;
-  margin-left: 0;
+  gap: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 }
