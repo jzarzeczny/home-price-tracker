@@ -2,7 +2,8 @@ import {
   Resource,
   component$,
   useContext,
-  useResource$,
+  useSignal,
+  useTask$,
 } from "@builder.io/qwik";
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import styles from "./index.module.scss";
@@ -83,18 +84,17 @@ export default component$(() => {
   const addAction = useAddLink();
   const deleteAction = useDeleteHouse();
   const refetchAction = useRefetchHouse();
-  //TODO perform operation in pageLoader
-  const userHouse = useResource$(async ({ track }) => {
-    track(() => userSession.userId);
-    // TODO use one query to pull this data
+  const houses = useSignal<HouseCardInterface[]>();
+
+  useTask$(async () => {
     const housesData = await getHouses(userSession.userId);
     const priceData = await getPrices(userSession.userId);
 
-    const houses: HouseCardInterface[] = margeHousesWithPrices(
+    const housesReturnValue: HouseCardInterface[] = margeHousesWithPrices(
       housesData,
       priceData
     );
-    return houses;
+    houses.value = housesReturnValue;
   });
 
   return (
@@ -111,24 +111,25 @@ export default component$(() => {
           <p class={styles.error}>{addAction.value as string}</p>
         )}
       </Form>
-
-      <Resource
-        value={userHouse}
-        onPending={() => <p>Loading...</p>}
-        onResolved={(housesData) => (
-          <section class={styles.houses}>
-            {housesData?.map((house) => (
-              <HouseCard
-                key={house.id}
-                data={house}
-                deleteAction={deleteAction}
-                refetchAction={refetchAction}
-                userId={userSession.userId}
-              />
-            ))}
-          </section>
-        )}
-      />
+      <section class={styles.houses}>
+        <Resource
+          value={houses}
+          onPending={() => <p>Loading...</p>}
+          onResolved={(housesData) => (
+            <>
+              {housesData?.map((house) => (
+                <HouseCard
+                  key={house.id}
+                  data={house}
+                  deleteAction={deleteAction}
+                  refetchAction={refetchAction}
+                  userId={userSession.userId}
+                />
+              ))}
+            </>
+          )}
+        />
+      </section>
     </>
   );
 });

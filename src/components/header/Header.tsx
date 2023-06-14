@@ -11,7 +11,6 @@ const navigation = [
 
 export default component$(() => {
   const userSession = useContext(UserSessionContext);
-
   const nav = useNavigate();
   const handleLogOut = $(async () => {
     await signOut();
