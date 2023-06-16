@@ -1,10 +1,4 @@
-import {
-  component$,
-  useVisibleTask$,
-  useStore,
-  useContextProvider,
-  createContextId,
-} from "@builder.io/qwik";
+import { component$, createContextId } from "@builder.io/qwik";
 import {
   QwikCityProvider,
   RouterOutlet,
@@ -13,9 +7,6 @@ import {
 import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
-import { supabaseClient } from "./server/db/client";
-import type { Session } from "supabase-auth-helpers-qwik";
-import type { AuthChangeEvent } from "@supabase/supabase-js";
 
 export const UserSessionContext = createContextId<UserSession>("user-session");
 
@@ -25,31 +16,6 @@ export type UserSession = {
 };
 
 export default component$(() => {
-  const UserSession: UserSession = useStore({
-    userId: "",
-    isLoggedIn: false,
-  });
-  useVisibleTask$(async () => {
-    const { data: authListener } = await supabaseClient.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
-        if (event === "SIGNED_IN") {
-          UserSession.userId = session?.user.id || "";
-          UserSession.isLoggedIn = true;
-        }
-        if (event === "SIGNED_OUT") {
-          UserSession.userId = "";
-          UserSession.isLoggedIn = false;
-        }
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  });
-
-  useContextProvider(UserSessionContext, UserSession);
-
   return (
     <QwikCityProvider>
       <head>
