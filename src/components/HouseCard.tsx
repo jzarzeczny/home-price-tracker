@@ -7,10 +7,11 @@ interface HouseCard {
   data: HouseCardInterface;
   deleteAction: ActionStore<{}, Record<string, any>, true>;
   refetchAction: ActionStore<{}, Record<string, any>, true>;
+  userId: string;
 }
 
 export const HouseCard = component$(
-  ({ data, deleteAction, refetchAction }: HouseCard) => {
+  ({ data, deleteAction, refetchAction, userId }: HouseCard) => {
     return (
       <div key={data.id} class={styles.container}>
         <div class={styles.imageContainer}>
@@ -36,6 +37,7 @@ export const HouseCard = component$(
                 await refetchAction.submit({
                   houseId: data.id,
                   houseUrl: data.link,
+                  userId,
                 });
               }}
             >

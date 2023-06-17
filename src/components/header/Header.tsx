@@ -10,6 +10,7 @@ const navigation = [
 ];
 
 export const useSignInGoogleAction = globalAction$(async () => {
+  console.log(getBaseUrl());
   await signInWithGoogle();
 });
 
@@ -23,6 +24,7 @@ export default component$(({ id }: UserInterface) => {
     nav(`${getBaseUrl()}/auth/signOut`);
   });
   const handleLogin = $(async () => {
+    console.log(getBaseUrl());
     await signInWithGoogle();
   });
   return (
