@@ -6,7 +6,7 @@ import { getBaseUrl } from "~/utils/routeUtils";
 
 const navigation = [
   { text: "Home", href: "/" },
-  { text: "Dashboard", href: "/dashboard" },
+  { text: "App", href: "/app" },
 ];
 
 export const useSignInGoogleAction = globalAction$(async () => {

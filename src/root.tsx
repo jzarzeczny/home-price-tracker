@@ -1,6 +1,7 @@
 import {
   component$,
   createContextId,
+  useContextProvider,
   useStore,
   useVisibleTask$,
 } from "@builder.io/qwik";
@@ -29,7 +30,7 @@ export default component$(() => {
     isLoggedIn: false,
   });
   useVisibleTask$(async () => {
-    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
+    const { data: authListener } = await supabaseClient.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
         if (event === "SIGNED_IN") {
           UserSession.userId = session?.user.id || "";
@@ -46,6 +47,8 @@ export default component$(() => {
       authListener.subscription.unsubscribe();
     };
   });
+
+  useContextProvider(UserSessionContext, UserSession);
   return (
     <QwikCityProvider>
       <head>

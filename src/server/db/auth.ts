@@ -13,7 +13,6 @@ const options: CookieOptions = {
 };
 
 export async function signInWithGoogle(): Promise<OAuthResponse> {
-  console.log(getBaseUrl());
   const result = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
     options: {

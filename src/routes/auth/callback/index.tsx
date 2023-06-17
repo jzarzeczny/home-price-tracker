@@ -45,7 +45,7 @@ export default component$(() => {
       return;
     }
 
-    navigate(`${getBaseUrl()}/dashboard`);
+    navigate(`${getBaseUrl()}/app`);
   });
 
   useVisibleTask$(() => {
