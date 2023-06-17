@@ -1,9 +1,9 @@
 import {
   component$,
-  useVisibleTask$,
-  useStore,
-  useContextProvider,
   createContextId,
+  useContextProvider,
+  useStore,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 import {
   QwikCityProvider,
@@ -49,7 +49,6 @@ export default component$(() => {
   });
 
   useContextProvider(UserSessionContext, UserSession);
-
   return (
     <QwikCityProvider>
       <head>

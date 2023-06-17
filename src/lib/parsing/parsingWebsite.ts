@@ -12,11 +12,11 @@ interface ParsedWebData {
 
 export const parseWebsite = async (website: Response, link: string) => {
   const url = new URL(link).host;
-  let parsedData: Promise<ParsedWebData>;
+  let parsedData: ParsedWebData;
   if (url.includes(otoDomUrl)) {
-    parsedData = parseOtoDom(website);
+    parsedData = await parseOtoDom(website);
   } else if (url.includes(olxUrl)) {
-    parsedData = parseOLX(website);
+    parsedData = await parseOLX(website);
   } else {
     throw new Error("URL not supported");
   }

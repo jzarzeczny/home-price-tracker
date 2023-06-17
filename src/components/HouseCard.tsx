@@ -2,7 +2,6 @@ import { component$ } from "@builder.io/qwik";
 import styles from "./HouseCard.module.scss";
 import type { HouseCardInterface } from "~/interfaces";
 import type { ActionStore } from "@builder.io/qwik-city";
-import { Form } from "@builder.io/qwik-city";
 
 interface HouseCard {
   data: HouseCardInterface;
@@ -32,16 +31,25 @@ export const HouseCard = component$(
             <a href={data.link} target="_blank">
               Strona
             </a>
-            <Form action={refetchAction}>
-              <input type="hidden" name="houseId" value={data.id} />
-              <input type="hidden" name="houseUrl" value={data.link} />
-              <input type="hidden" name="userId" value={userId} />
-              <button type="submit">Odśwież</button>
-            </Form>
-            <Form action={deleteAction}>
-              <input type="hidden" name="houseId" value={data.id} />
-              <button type="submit">Usuń</button>
-            </Form>
+
+            <button
+              onClick$={async () => {
+                await refetchAction.submit({
+                  houseId: data.id,
+                  houseUrl: data.link,
+                  userId,
+                });
+              }}
+            >
+              Odśwież
+            </button>
+            <button
+              onClick$={async () => {
+                deleteAction.submit({ houseId: data.id });
+              }}
+            >
+              Usuń
+            </button>
           </div>
         </div>
       </div>

@@ -1,23 +1,30 @@
-import { $, component$, useContext } from "@builder.io/qwik";
-import { Link, useNavigate } from "@builder.io/qwik-city";
+import { $, component$ } from "@builder.io/qwik";
+import { Link, globalAction$, useNavigate } from "@builder.io/qwik-city";
 import styles from "./Header.module.scss";
-import { signInWithGoogle, signOut } from "~/server/db/auth";
-import { UserSessionContext } from "~/root";
+import { signInWithGoogle } from "~/server/db/auth";
+import { getBaseUrl } from "~/utils/routeUtils";
 
 const navigation = [
   { text: "Home", href: "/" },
-  { text: "Dashboard", href: "/dashboard" },
+  { text: "App", href: "/app" },
 ];
 
-export default component$(() => {
-  const userSession = useContext(UserSessionContext);
+export const useSignInGoogleAction = globalAction$(async () => {
+  console.log(getBaseUrl());
+  await signInWithGoogle();
+});
 
+interface UserInterface {
+  id: string | undefined;
+}
+
+export default component$(({ id }: UserInterface) => {
   const nav = useNavigate();
   const handleLogOut = $(async () => {
-    await signOut();
-    nav("/");
+    nav(`${getBaseUrl()}/auth/signOut`);
   });
   const handleLogin = $(async () => {
+    console.log(getBaseUrl());
     await signInWithGoogle();
   });
   return (
@@ -29,7 +36,7 @@ export default component$(() => {
           </li>
         ))}
       </nav>
-      {userSession.isLoggedIn ? (
+      {id !== undefined ? (
         <button class={styles.button} onClick$={handleLogOut}>
           Logout
         </button>

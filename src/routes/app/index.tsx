@@ -1,24 +1,38 @@
-import {
-  Resource,
-  component$,
-  useContext,
-  useResource$,
-} from "@builder.io/qwik";
-import { Form, routeAction$ } from "@builder.io/qwik-city";
+import { component$, useContext } from "@builder.io/qwik";
 import styles from "./index.module.scss";
-import { HouseCard } from "~/components/HouseCard";
-import type { HouseCardInterface } from "~/interfaces";
-import { UserSessionContext } from "~/root";
-import { parseWebsite } from "~/lib/parsing/parsingWebsite";
+import { Form, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import { getUserFromEvent } from "~/server/db/auth";
 import {
-  getHouses,
-  getPrices,
-  deleteHouse,
   addHouse,
   addInitialPrice,
   addPrice,
+  deleteHouse,
+  getHouses,
+  getPrices,
 } from "~/server/db/queries";
 import { margeHousesWithPrices } from "~/lib/utils/data";
+import type { HouseCardInterface } from "~/interfaces";
+import { parseWebsite } from "~/lib/parsing/parsingWebsite";
+import { UserSessionContext } from "~/root";
+import { HouseCard } from "~/components/HouseCard";
+
+export const useHousesData = routeLoader$(async (requestEvent) => {
+  const user = await getUserFromEvent(requestEvent);
+  if (!user) {
+    requestEvent.redirect(301, "/");
+    return;
+  }
+  const userId = user?.id;
+  const housesData = await getHouses(userId as string);
+  const priceData = await getPrices(userId as string);
+
+  const housesReturnValue: HouseCardInterface[] = margeHousesWithPrices(
+    housesData,
+    priceData
+  );
+
+  return housesReturnValue;
+});
 
 export const useAddLink = routeAction$(async (props) => {
   try {
@@ -45,7 +59,6 @@ export const useAddLink = routeAction$(async (props) => {
       pricePerM: parsedData.pricePerM,
     });
   } catch (error) {
-    console.log(error);
     return "Niepoprawy link";
   }
 });
@@ -83,19 +96,7 @@ export default component$(() => {
   const addAction = useAddLink();
   const deleteAction = useDeleteHouse();
   const refetchAction = useRefetchHouse();
-  //TODO perform operation in pageLoader
-  const userHouse = useResource$(async ({ track }) => {
-    track(() => userSession.userId);
-    // TODO use one query to pull this data
-    const housesData = await getHouses(userSession.userId);
-    const priceData = await getPrices(userSession.userId);
-
-    const houses: HouseCardInterface[] = margeHousesWithPrices(
-      housesData,
-      priceData
-    );
-    return houses;
-  });
+  const randomSignal = useHousesData();
 
   return (
     <>
@@ -111,24 +112,17 @@ export default component$(() => {
           <p class={styles.error}>{addAction.value as string}</p>
         )}
       </Form>
-
-      <Resource
-        value={userHouse}
-        onPending={() => <p>Loading...</p>}
-        onResolved={(housesData) => (
-          <section class={styles.houses}>
-            {housesData?.map((house) => (
-              <HouseCard
-                key={house.id}
-                data={house}
-                deleteAction={deleteAction}
-                refetchAction={refetchAction}
-                userId={userSession.userId}
-              />
-            ))}
-          </section>
-        )}
-      />
+      <section class={styles.houses}>
+        {randomSignal.value?.map((house) => (
+          <HouseCard
+            key={house.id}
+            data={house}
+            deleteAction={deleteAction}
+            refetchAction={refetchAction}
+            userId={userSession.userId}
+          />
+        ))}
+      </section>
     </>
   );
 });
