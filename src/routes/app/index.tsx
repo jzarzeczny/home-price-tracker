@@ -14,7 +14,7 @@ import { margeHousesWithPrices } from "~/lib/utils/data";
 import type { HouseCardInterface } from "~/interfaces";
 import { parseWebsite } from "~/lib/parsing/parsingWebsite";
 import { UserSessionContext } from "~/root";
-import { HouseCard } from "~/components/HouseCard";
+import HouseCard from "~/components/HouseCard";
 
 export const useHousesData = routeLoader$(async (requestEvent) => {
   const user = await getUserFromEvent(requestEvent);
@@ -40,6 +40,9 @@ export const useAddLink = routeAction$(async (props) => {
     const userId = props.userId as string;
     const website = await fetch(props.link as string);
 
+    if (!website) {
+      throw new Error("No website");
+    }
     const parsedData = await parseWebsite(website, link);
 
     const houseObject = await addHouse({
@@ -53,12 +56,13 @@ export const useAddLink = routeAction$(async (props) => {
       return;
     }
     await addInitialPrice({
-      userId: userId,
+      userId,
       houseId: house.id,
       price: parsedData.price,
       pricePerM: parsedData.pricePerM,
     });
   } catch (error) {
+    console.log(error);
     return "Niepoprawy link";
   }
 });
@@ -96,7 +100,7 @@ export default component$(() => {
   const addAction = useAddLink();
   const deleteAction = useDeleteHouse();
   const refetchAction = useRefetchHouse();
-  const randomSignal = useHousesData();
+  const housesSignal = useHousesData();
 
   return (
     <>
@@ -113,7 +117,7 @@ export default component$(() => {
         )}
       </Form>
       <section class={styles.houses}>
-        {randomSignal.value?.map((house) => (
+        {housesSignal.value?.map((house) => (
           <HouseCard
             key={house.id}
             data={house}
