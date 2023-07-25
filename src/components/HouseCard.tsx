@@ -1,12 +1,13 @@
 import { component$ } from "@builder.io/qwik";
 import styles from "./HouseCard.module.scss";
 import type { HouseCardInterface } from "~/interfaces";
-import type { ActionStore } from "@builder.io/qwik-city";
+import { Link, type ActionStore } from "@builder.io/qwik-city";
 import HouseSourceIcon from "./common/icons/HouseSourceIcon";
 import PriceIcon from "./common/icons/PriceIcon";
 import BedsIcon from "./common/icons/BedsIcon";
 import FloorIcon from "./common/icons/FloorIcon";
 import AreaIcon from "./common/icons/AreaIcon";
+import ReloadIcon from "./common/icons/ReloadIcon";
 
 interface HouseCard {
   data: HouseCardInterface;
@@ -121,6 +122,12 @@ export default component$(({ data }: HouseCard) => {
         <div class={styles.noteContent} contentEditable="true">
           Super okolica i ulubiony park jest blisko
         </div>
+      </div>
+      <div class={styles.actionBar}>
+        <button>
+          <ReloadIcon />
+        </button>
+        <Link>Strona oferty</Link>
       </div>
     </div>
   );

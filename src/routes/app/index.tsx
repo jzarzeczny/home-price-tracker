@@ -104,14 +104,20 @@ export default component$(() => {
 
   return (
     <>
-      <h3 class={styles.header}>Twoje zapisane domy</h3>
       <Form class={styles.addHouseForm} action={addAction}>
         <div class={styles.formControl}>
-          <label>URL mieszkania/domu</label>
-          <input type="text" name="link" />
+          <input
+            type="text"
+            name="link"
+            placeholder="skopiuj tutaj adres oferty"
+          />
         </div>
         <input type="hidden" value={userSession.userId} name="userId" />
-        <button type="submit">Dodaj</button>
+        <input
+          class={styles.submitButton}
+          type="submit"
+          value={"Dodaj"}
+        ></input>
         {addAction.value && (
           <p class={styles.error}>{addAction.value as string}</p>
         )}
