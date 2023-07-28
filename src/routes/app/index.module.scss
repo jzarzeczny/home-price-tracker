@@ -1,18 +1,35 @@
-.header {
-  text-align: center;
-  font-size: 2rem;
-}
-
 .addHouseForm {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2rem 0;
 }
 .formControl {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
+
+  & input[type="text"] {
+    width: 100%;
+    border: none;
+    background-color: #eef1ee;
+    padding: 1rem 1rem;
+    padding-left: auto;
+
+    &::placeholder {
+      text-align: center;
+    }
+  }
+}
+
+input[type="submit"] {
+  width: calc(100% - 3rem);
+  max-width: 400px;
+  border: none;
+  border-radius: 48px;
+  padding: 1rem 0;
+  background-color: #66d36e;
+  margin: 0.75rem 1.5rem 1.5rem;
 }
 
 .houses {

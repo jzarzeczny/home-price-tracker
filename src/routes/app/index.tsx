@@ -14,7 +14,7 @@ import { margeHousesWithPrices } from "~/lib/utils/data";
 import type { HouseCardInterface } from "~/interfaces";
 import { parseWebsite } from "~/lib/parsing/parsingWebsite";
 import { UserSessionContext } from "~/root";
-import { HouseCard } from "~/components/HouseCard";
+import HouseCard from "~/components/HouseCard";
 
 export const useHousesData = routeLoader$(async (requestEvent) => {
   const user = await getUserFromEvent(requestEvent);
@@ -40,6 +40,9 @@ export const useAddLink = routeAction$(async (props) => {
     const userId = props.userId as string;
     const website = await fetch(props.link as string);
 
+    if (!website) {
+      throw new Error("No website");
+    }
     const parsedData = await parseWebsite(website, link);
 
     const houseObject = await addHouse({
@@ -53,12 +56,13 @@ export const useAddLink = routeAction$(async (props) => {
       return;
     }
     await addInitialPrice({
-      userId: userId,
+      userId,
       houseId: house.id,
       price: parsedData.price,
       pricePerM: parsedData.pricePerM,
     });
   } catch (error) {
+    console.log(error);
     return "Niepoprawy link";
   }
 });
@@ -96,24 +100,30 @@ export default component$(() => {
   const addAction = useAddLink();
   const deleteAction = useDeleteHouse();
   const refetchAction = useRefetchHouse();
-  const randomSignal = useHousesData();
+  const housesSignal = useHousesData();
 
   return (
     <>
-      <h3 class={styles.header}>Twoje zapisane domy</h3>
       <Form class={styles.addHouseForm} action={addAction}>
         <div class={styles.formControl}>
-          <label>URL mieszkania/domu</label>
-          <input type="text" name="link" />
+          <input
+            type="text"
+            name="link"
+            placeholder="skopiuj tutaj adres oferty"
+          />
         </div>
         <input type="hidden" value={userSession.userId} name="userId" />
-        <button type="submit">Dodaj</button>
+        <input
+          class={styles.submitButton}
+          type="submit"
+          value={"Dodaj"}
+        ></input>
         {addAction.value && (
           <p class={styles.error}>{addAction.value as string}</p>
         )}
       </Form>
       <section class={styles.houses}>
-        {randomSignal.value?.map((house) => (
+        {housesSignal.value?.map((house) => (
           <HouseCard
             key={house.id}
             data={house}
