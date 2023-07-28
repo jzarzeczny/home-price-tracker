@@ -51,12 +51,13 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
   const $ = await load(html);
   const imageUrl = $("img").first().attr("src");
   const title = $('h1[data-cy="ad_title"]').text();
-  const price = $('[data-testid="ad-price-container"] h3').text();
+  const price = $('[data-testid="ad-price-container"] h2').text();
   const pricePerM = $("li > p")
     .filter((_, element) => {
       return $(element).text().includes("Cena za m²");
     })
     .text();
+
   if (!imageUrl || !title || !price || !pricePerM) {
     throw new Error("Image does not exists");
   }

@@ -45,6 +45,8 @@ export const useAddLink = routeAction$(async (props) => {
     }
     const parsedData = await parseWebsite(website, link);
 
+    console.log(userId);
+
     const houseObject = await addHouse({
       imageUrl: parsedData.imageUrl,
       title: parsedData.title,
@@ -53,7 +55,7 @@ export const useAddLink = routeAction$(async (props) => {
     });
     const house = houseObject.data?.pop();
     if (!house) {
-      return;
+      throw Error("House data is not provided");
     }
     await addInitialPrice({
       userId,
@@ -62,7 +64,6 @@ export const useAddLink = routeAction$(async (props) => {
       pricePerM: parsedData.pricePerM,
     });
   } catch (error) {
-    console.log(error);
     return "Niepoprawy link";
   }
 });
@@ -80,6 +81,7 @@ export const useRefetchHouse = routeAction$(async (props) => {
   const houseId = props.houseId as string;
   const houseUrl = props.houseUrl as string;
   const userId = props.userId as string;
+
   try {
     const website = await fetch(houseUrl);
     const parsedData = await parseWebsite(website, houseUrl);
@@ -104,9 +106,17 @@ export default component$(() => {
 
   return (
     <>
-      <Form class={styles.addHouseForm} action={addAction}>
+      <Form
+        class={styles.addHouseForm}
+        action={addAction}
+        onSubmitCompleted$={(_, form) => {
+          const link = form.querySelector("#link") as HTMLInputElement;
+          link.value = "";
+        }}
+      >
         <div class={styles.formControl}>
           <input
+            id="link"
             type="text"
             name="link"
             placeholder="skopiuj tutaj adres oferty"
