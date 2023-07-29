@@ -14,7 +14,7 @@ import { margeHousesWithPrices } from "~/lib/utils/data";
 import type { HouseCardInterface } from "~/interfaces";
 import { parseWebsite } from "~/lib/parsing/parsingWebsite";
 import { UserSessionContext } from "~/root";
-import HouseCard from "~/components/HouseCard";
+import { HouseCard } from "~/components/HouseCard";
 
 export const useHousesData = routeLoader$(async (requestEvent) => {
   const user = await getUserFromEvent(requestEvent);
@@ -48,6 +48,8 @@ export const useAddLink = routeAction$(async (props) => {
     const houseObject = await addHouse({
       imageUrl: parsedData.imageUrl,
       title: parsedData.title,
+      rooms: parsedData.rooms,
+      floor: parsedData.floor,
       link,
       userId,
     });
@@ -62,6 +64,7 @@ export const useAddLink = routeAction$(async (props) => {
       pricePerM: parsedData.pricePerM,
     });
   } catch (error) {
+    console.log(error);
     return "Niepoprawy link";
   }
 });

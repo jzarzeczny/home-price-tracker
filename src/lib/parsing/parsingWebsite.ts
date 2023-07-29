@@ -8,7 +8,11 @@ interface ParsedWebData {
   title: string;
   price: string;
   pricePerM: string;
+  rooms: number;
+  floor: number;
 }
+
+const numberPattern = /\d+/;
 
 export const parseWebsite = async (website: Response, link: string) => {
   const url = new URL(link).host;
@@ -34,6 +38,7 @@ export const parseOtoDom = async (
   const title = $('h1[data-cy="adPageAdTitle"]').text();
   const price = $('strong[data-cy="adPageHeaderPrice"]').text();
   const pricePerM = $('div[aria-label="Cena za metr kwadratowy"]').text();
+
   if (!imageUrl || !title || !price || !pricePerM) {
     throw new Error("Image does not exists");
   }
@@ -42,12 +47,14 @@ export const parseOtoDom = async (
     title,
     price,
     pricePerM,
+    rooms: 0,
+    floor: 0,
   };
 };
 
 export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
   const html = await webside.text();
-
+  console.log(html);
   const $ = await load(html);
   const imageUrl = $("img").first().attr("src");
   const title = $('h1[data-cy="ad_title"]').text();
@@ -57,12 +64,26 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
       return $(element).text().includes("Cena za m²");
     })
     .text();
+  const roomsDirty = $('li:contains("Liczba pokoi:")').text();
 
-  if (!imageUrl || !title || !price || !pricePerM) {
+  const floorDirty = $('li:contains("Poziom:")').text();
+  const rooms = parseTheRegexp(roomsDirty);
+  const floor = parseTheRegexp(floorDirty);
+  console.log(rooms);
+  console.log(floor);
+
+  if (!imageUrl || !title || !price || !pricePerM || !rooms || !floor) {
     throw new Error("Image does not exists");
   }
 
-  return { imageUrl, title, price, pricePerM: extractPricePerM(pricePerM) };
+  return {
+    imageUrl,
+    title,
+    price,
+    pricePerM: extractPricePerM(pricePerM),
+    rooms,
+    floor,
+  };
 };
 
 const extractPricePerM = (text: string): string => {
@@ -70,4 +91,12 @@ const extractPricePerM = (text: string): string => {
   const match = text.match(regex) as string[];
   const extractedValue = match[1];
   return extractedValue;
+};
+
+const parseTheRegexp = (text: string): number | null => {
+  const regex = text.match(numberPattern);
+  if (regex) {
+    return parseInt(regex[0], 10);
+  }
+  return null;
 };

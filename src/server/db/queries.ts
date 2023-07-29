@@ -6,6 +6,8 @@ interface AddHouseInterface {
   title: string;
   link: string;
   userId: string;
+  floor: number;
+  rooms: number;
 }
 
 export const addHouse = async (houseData: AddHouseInterface) => {
