@@ -50,6 +50,7 @@ export const useAddLink = routeAction$(async (props) => {
       title: parsedData.title,
       rooms: parsedData.rooms,
       floor: parsedData.floor,
+      size: parsedData.size,
       link,
       userId,
     });

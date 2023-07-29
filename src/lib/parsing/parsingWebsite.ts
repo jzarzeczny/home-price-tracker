@@ -10,11 +10,15 @@ interface ParsedWebData {
   pricePerM: string;
   rooms: number;
   floor: number;
+  size: number;
 }
 
 const numberPattern = /\d+/;
 
-export const parseWebsite = async (website: Response, link: string) => {
+export const parseWebsite = async (
+  website: Response,
+  link: string
+): Promise<ParsedWebData> => {
   const url = new URL(link).host;
   let parsedData: ParsedWebData;
   if (url.includes(otoDomUrl)) {
@@ -49,6 +53,7 @@ export const parseOtoDom = async (
     pricePerM,
     rooms: 0,
     floor: 0,
+    size: 0,
   };
 };
 
@@ -57,6 +62,7 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
   console.log(html);
   const $ = await load(html);
   const imageUrl = $("img").first().attr("src");
+  console.log(imageUrl);
   const title = $('h1[data-cy="ad_title"]').text();
   const price = $('[data-testid="ad-price-container"] h2').text();
   const pricePerM = $("li > p")
@@ -65,14 +71,21 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
     })
     .text();
   const roomsDirty = $('li:contains("Liczba pokoi:")').text();
-
   const floorDirty = $('li:contains("Poziom:")').text();
+  const sizeDirty = $('li:contains("Powierzchnia: ")').text();
+  const size = parseTheRegexp(sizeDirty);
   const rooms = parseTheRegexp(roomsDirty);
-  const floor = parseTheRegexp(floorDirty);
-  console.log(rooms);
+  const floor = parseTheRegexp(floorDirty) || 0;
   console.log(floor);
-
-  if (!imageUrl || !title || !price || !pricePerM || !rooms || !floor) {
+  if (
+    !imageUrl ||
+    !title ||
+    !price ||
+    !pricePerM ||
+    !rooms ||
+    !floor ||
+    !size
+  ) {
     throw new Error("Image does not exists");
   }
 
@@ -83,6 +96,7 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
     pricePerM: extractPricePerM(pricePerM),
     rooms,
     floor,
+    size,
   };
 };
 

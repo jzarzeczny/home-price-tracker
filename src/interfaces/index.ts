@@ -5,6 +5,9 @@ export interface HouseCardInterface {
   price: string;
   pricePerM: string;
   link: string;
+  floor: number;
+  rooms: number;
+  size: number;
 }
 
 export interface HouseDBReturn {

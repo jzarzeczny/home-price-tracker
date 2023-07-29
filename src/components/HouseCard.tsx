@@ -68,7 +68,7 @@ export const HouseCard = component$(
             <h4>Cena</h4>
           </div>
 
-          <p class={styles.value}>10 000 za metr</p>
+          <p class={styles.value}>{data.pricePerM}</p>
 
           <div class={styles.name}>
             <AreaIcon />
