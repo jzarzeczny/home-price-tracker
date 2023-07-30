@@ -1,13 +1,23 @@
-export interface HouseCardInterface {
-  id: string;
+export enum HOUSE_SOURCE {
+  otoDom = "otodom.pl",
+  olx = "olx.pl",
+}
+
+export interface CreateHouseData {
   imageUrl: string;
   title: string;
   price: string;
   pricePerM: string;
-  link: string;
-  floor: number;
   rooms: number;
+  floor: number;
   size: number;
+  source: HOUSE_SOURCE;
+}
+
+export interface HouseData extends CreateHouseData {
+  id: string;
+  link: string;
+  note: string;
 }
 
 export interface HouseDBReturn {

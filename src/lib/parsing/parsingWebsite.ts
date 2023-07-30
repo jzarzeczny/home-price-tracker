@@ -1,26 +1,17 @@
 import { load } from "cheerio";
+import { CreateHouseData, HOUSE_SOURCE } from "../interfaces/index";
 
 const otoDomUrl = "otodom.pl" as const;
 const olxUrl = "olx.pl" as const;
-
-interface ParsedWebData {
-  imageUrl: string;
-  title: string;
-  price: string;
-  pricePerM: string;
-  rooms: number;
-  floor: number;
-  size: number;
-}
 
 const numberPattern = /\d+/;
 
 export const parseWebsite = async (
   website: Response,
   link: string
-): Promise<ParsedWebData> => {
+): Promise<CreateHouseData> => {
   const url = new URL(link).host;
-  let parsedData: ParsedWebData;
+  let parsedData: CreateHouseData;
   if (url.includes(otoDomUrl)) {
     parsedData = await parseOtoDom(website);
   } else if (url.includes(olxUrl)) {
@@ -33,7 +24,7 @@ export const parseWebsite = async (
 
 export const parseOtoDom = async (
   website: Response
-): Promise<ParsedWebData> => {
+): Promise<CreateHouseData> => {
   const html = await website.text();
 
   const $ = await load(html);
@@ -42,8 +33,40 @@ export const parseOtoDom = async (
   const title = $('h1[data-cy="adPageAdTitle"]').text();
   const price = $('strong[data-cy="adPageHeaderPrice"]').text();
   const pricePerM = $('div[aria-label="Cena za metr kwadratowy"]').text();
+  const roomsDirty = $('div[data-cy="table-label-content"]')
+    .filter((_, element) => {
+      return $(element).text().trim() === "Liczba pokoi";
+    })
+    .parent()
+    .next();
 
-  if (!imageUrl || !title || !price || !pricePerM) {
+  const rooms = parseInt(roomsDirty.children().text().trim());
+  const floorDirty = $('div[data-cy="table-label-content"]')
+    .filter((_, element) => {
+      return $(element).text().trim() === "Piętro";
+    })
+    .parent()
+    .next();
+
+  const floor = parseInt(floorDirty.children().text());
+  const sizeDirty = $('div[data-cy="table-label-content"]')
+    .filter((_, element) => {
+      return $(element).text().trim() === "Powierzchnia";
+    })
+    .parent()
+    .next();
+
+  const size = parseTheRegexp(sizeDirty.children().text().split("}")[1]);
+
+  if (
+    !imageUrl ||
+    !title ||
+    !price ||
+    !pricePerM ||
+    !rooms ||
+    !floor ||
+    !size
+  ) {
     throw new Error("Image does not exists");
   }
   return {
@@ -51,18 +74,17 @@ export const parseOtoDom = async (
     title,
     price,
     pricePerM,
-    rooms: 0,
-    floor: 0,
-    size: 0,
+    rooms,
+    floor,
+    size,
+    source: HOUSE_SOURCE.otoDom,
   };
 };
 
-export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
+export const parseOLX = async (webside: Response): Promise<CreateHouseData> => {
   const html = await webside.text();
-  console.log(html);
   const $ = await load(html);
   const imageUrl = $("img").first().attr("src");
-  console.log(imageUrl);
   const title = $('h1[data-cy="ad_title"]').text();
   const price = $('[data-testid="ad-price-container"] h2').text();
   const pricePerM = $("li > p")
@@ -76,7 +98,6 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
   const size = parseTheRegexp(sizeDirty);
   const rooms = parseTheRegexp(roomsDirty);
   const floor = parseTheRegexp(floorDirty) || 0;
-  console.log(floor);
   if (
     !imageUrl ||
     !title ||
@@ -97,6 +118,7 @@ export const parseOLX = async (webside: Response): Promise<ParsedWebData> => {
     rooms,
     floor,
     size,
+    source: HOUSE_SOURCE.olx,
   };
 };
 

@@ -11,7 +11,7 @@ import {
   getPrices,
 } from "~/server/db/queries";
 import { margeHousesWithPrices } from "~/lib/utils/data";
-import type { HouseCardInterface } from "~/interfaces";
+import type { HouseData } from "~/lib/interfaces";
 import { parseWebsite } from "~/lib/parsing/parsingWebsite";
 import { UserSessionContext } from "~/root";
 import { HouseCard } from "~/components/HouseCard";
@@ -26,7 +26,7 @@ export const useHousesData = routeLoader$(async (requestEvent) => {
   const housesData = await getHouses(userId as string);
   const priceData = await getPrices(userId as string);
 
-  const housesReturnValue: HouseCardInterface[] = margeHousesWithPrices(
+  const housesReturnValue: HouseData[] = margeHousesWithPrices(
     housesData,
     priceData
   );

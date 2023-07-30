@@ -1,4 +1,4 @@
-import { HouseDBReturn, PriceDBReturn } from "~/interfaces";
+import { HouseDBReturn, HouseData, PriceDBReturn } from "~/lib/interfaces";
 import { supabaseClient } from "./client";
 
 interface AddHouseInterface {
@@ -45,13 +45,14 @@ export const addPrice = async (priceData: PriceDataInterface) => {
   });
 };
 
-export const getHouses = async (userId: string): Promise<HouseDBReturn[]> => {
+export const getHouses = async (userId: string): Promise<HouseData[]> => {
   const houses = await supabaseClient
     .from("houses")
     .select("*")
-    .eq("userId", userId);
+    .eq("userId", userId)
+    .order("createdAt", { ascending: false });
 
-  return (houses.data as HouseDBReturn[]) || [];
+  return (houses.data as HouseData[]) || [];
 };
 
 export const getPrices = async (userId: string): Promise<PriceDBReturn[]> => {
@@ -61,6 +62,18 @@ export const getPrices = async (userId: string): Promise<PriceDBReturn[]> => {
     .eq("userId", userId);
 
   return prices.data as PriceDBReturn[];
+};
+
+export const updateNote = async (
+  houseId: string,
+  noteContent: string
+): Promise<PriceDBReturn[]> => {
+  const updatedHouse = await supabaseClient
+    .from("houses")
+    .update({ note: noteContent })
+    .eq("id", houseId)
+    .select();
+  return updatedHouse.data as PriceDBReturn[];
 };
 
 export const deleteHouse = async (houseId: string) => {

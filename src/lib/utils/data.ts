@@ -1,17 +1,17 @@
-import { HouseCardInterface, HouseDBReturn, PriceDBReturn } from "~/interfaces";
+import { HouseData, PriceDBReturn } from "../interfaces";
 
 export const margeHousesWithPrices = (
-  houses: HouseDBReturn[],
+  houses: HouseData[],
   prices: PriceDBReturn[]
-): HouseCardInterface[] => {
+): HouseData[] => {
   return (
-    houses.map((house: HouseDBReturn) => {
+    houses.map((house: HouseData) => {
       const price = prices.find((price) => price.houseId === house.id);
       return {
         ...house,
         price: price?.price,
         pricePerM: price?.pricePerM,
-      } as HouseCardInterface;
+      } as HouseData;
     }) || []
   );
 };

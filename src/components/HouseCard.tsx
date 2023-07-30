@@ -1,6 +1,5 @@
 import { component$ } from "@builder.io/qwik";
 import styles from "./HouseCard.module.scss";
-import type { HouseCardInterface } from "~/interfaces";
 import { type ActionStore } from "@builder.io/qwik-city";
 import HouseSourceIcon from "./common/icons/HouseSourceIcon";
 import PriceIcon from "./common/icons/PriceIcon";
@@ -11,9 +10,11 @@ import ReloadIcon from "./common/icons/ReloadIcon";
 import LikeIcon from "./common/icons/LikeIcon";
 import RemoveIcon from "./common/icons/RemoveIcon";
 import NoteIcon from "./common/icons/NoteIcon";
+import { HOUSE_SOURCE, type HouseData } from "~/lib/interfaces";
+import { updateNote } from "~/server/db/queries";
 
 interface HouseCard {
-  data: HouseCardInterface;
+  data: HouseData;
   deleteAction: ActionStore<{}, Record<string, any>, true>;
   refetchAction: ActionStore<{}, Record<string, any>, true>;
   userId: string;
@@ -21,6 +22,13 @@ interface HouseCard {
 
 export const HouseCard = component$(
   ({ data, deleteAction, refetchAction, userId }: HouseCard) => {
+    const houseSource = (houseSource: HOUSE_SOURCE): string => {
+      if (houseSource === HOUSE_SOURCE.olx) {
+        return "Olx";
+      }
+      return "Otodom";
+    };
+
     return (
       <div key={data.id} class={styles.container}>
         <div class={styles.imageContainer}>
@@ -54,7 +62,7 @@ export const HouseCard = component$(
             <h4>Oferta</h4>
           </div>
 
-          <p class={styles.value}>Olx</p>
+          <p class={styles.value}>{houseSource(data.source)}</p>
 
           <div class={styles.name}>
             <HouseSourceIcon />
@@ -75,20 +83,20 @@ export const HouseCard = component$(
             <h4>Powierzchnia</h4>
           </div>
 
-          <p class={styles.value}>60 m</p>
+          <p class={styles.value}>{data.size} m</p>
           <div class={styles.name}>
             <BedsIcon />
             <h4>Liczba pokoi</h4>
           </div>
 
-          <p class={styles.value}>5</p>
+          <p class={styles.value}>{data.rooms}</p>
 
           <div class={styles.name}>
             <FloorIcon />
             <h4>Piętro</h4>
           </div>
 
-          <p class={styles.value}>3</p>
+          <p class={styles.value}>{data.floor}</p>
         </div>
 
         <div class={styles.note}>
@@ -96,8 +104,14 @@ export const HouseCard = component$(
             <NoteIcon />
             <h4>Notatka</h4>
           </div>
-          <div class={styles.noteContent} contentEditable="true">
-            Super okolica i ulubiony park jest blisko
+          <div
+            class={styles.noteContent}
+            contentEditable="true"
+            onBlur$={async (event) => {
+              await updateNote(data.id, event.target.innerText);
+            }}
+          >
+            {data.note ?? "Super okolica i ulubiony park jest blisko"}
           </div>
         </div>
         <div class={styles.actionBar}>
