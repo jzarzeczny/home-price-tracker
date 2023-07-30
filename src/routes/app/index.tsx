@@ -11,10 +11,10 @@ import {
   getPrices,
 } from "~/server/db/queries";
 import { margeHousesWithPrices } from "~/lib/utils/data";
-import type { HouseCardInterface } from "~/interfaces";
+import type { HouseData } from "~/lib/interfaces";
 import { parseWebsite } from "~/lib/parsing/parsingWebsite";
 import { UserSessionContext } from "~/root";
-import HouseCard from "~/components/HouseCard";
+import { HouseCard } from "~/components/HouseCard";
 
 export const useHousesData = routeLoader$(async (requestEvent) => {
   const user = await getUserFromEvent(requestEvent);
@@ -26,7 +26,7 @@ export const useHousesData = routeLoader$(async (requestEvent) => {
   const housesData = await getHouses(userId as string);
   const priceData = await getPrices(userId as string);
 
-  const housesReturnValue: HouseCardInterface[] = margeHousesWithPrices(
+  const housesReturnValue: HouseData[] = margeHousesWithPrices(
     housesData,
     priceData
   );
@@ -48,12 +48,15 @@ export const useAddLink = routeAction$(async (props) => {
     const houseObject = await addHouse({
       imageUrl: parsedData.imageUrl,
       title: parsedData.title,
+      rooms: parsedData.rooms,
+      floor: parsedData.floor,
+      size: parsedData.size,
       link,
       userId,
     });
     const house = houseObject.data?.pop();
     if (!house) {
-      return;
+      throw Error("House data is not provided");
     }
     await addInitialPrice({
       userId,
@@ -80,6 +83,7 @@ export const useRefetchHouse = routeAction$(async (props) => {
   const houseId = props.houseId as string;
   const houseUrl = props.houseUrl as string;
   const userId = props.userId as string;
+
   try {
     const website = await fetch(houseUrl);
     const parsedData = await parseWebsite(website, houseUrl);
@@ -104,9 +108,17 @@ export default component$(() => {
 
   return (
     <>
-      <Form class={styles.addHouseForm} action={addAction}>
+      <Form
+        class={styles.addHouseForm}
+        action={addAction}
+        onSubmitCompleted$={(_, form) => {
+          const link = form.querySelector("#link") as HTMLInputElement;
+          link.value = "";
+        }}
+      >
         <div class={styles.formControl}>
           <input
+            id="link"
             type="text"
             name="link"
             placeholder="skopiuj tutaj adres oferty"
