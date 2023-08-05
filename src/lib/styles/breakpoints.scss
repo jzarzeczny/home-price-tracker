@@ -1,4 +1,3 @@
-// Define breakpoints as variables
 $breakpoints: (
   tablet: 768px,
   smallPc: 1024px,
@@ -9,7 +8,7 @@ $breakpoints: (
 @mixin respond-to($breakpoint) {
   $breakpointValue: map-get($breakpoints, $breakpoint);
 
-  @media only screen and (max-width: $breakpointValue) {
+  @media only screen and (min-width: $breakpointValue) {
     @content;
   }
 }

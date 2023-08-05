@@ -6,8 +6,12 @@ import { Link } from "@builder.io/qwik-city";
 export default component$(() => {
   return (
     <header class={styles.header}>
-      <Link href="/">Home tracker</Link>
-      <p>Zapisuj ulubione oferty mieszkań!</p>
+      <div class={styles.contentWrapper}>
+        <div class={styles.logo}>
+          <Link href="/">Home tracker</Link>
+          <p>Zapisuj ulubione oferty mieszkań!</p>
+        </div>
+      </div>
     </header>
   );
 });

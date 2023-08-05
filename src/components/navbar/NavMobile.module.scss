@@ -1,3 +1,5 @@
+@use "src/lib/styles/breakpoints.scss" as *;
+
 .navbar {
   position: sticky;
   bottom: 0;
@@ -30,6 +32,10 @@
       font-size: 14px;
       line-height: 14px;
     }
+  }
+
+  @include respond-to(smallPc) {
+    display: none;
   }
 }
 
