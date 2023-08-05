@@ -1,7 +1,6 @@
 import { load } from "cheerio";
 import { CreateHouseData, HOUSE_SOURCE } from "../interfaces/index";
 import { validateWebsite } from "./validateWebsite";
-
 const otoDomUrl = "otodom.pl" as const;
 const olxUrl = "olx.pl" as const;
 
@@ -49,7 +48,7 @@ export const parseOtoDom = async (
     .parent()
     .next();
 
-  const floor = parseInt(floorDirty.children().text());
+  const floor = parseInt(floorDirty.children().text()) || 0;
   const sizeDirty = $('div[data-cy="table-label-content"]')
     .filter((_, element) => {
       return $(element).text().trim() === "Powierzchnia";
@@ -57,32 +56,10 @@ export const parseOtoDom = async (
     .parent()
     .next();
 
-  const size = parseTheRegexp(sizeDirty.children().text().split("}")[1]);
-  try {
-    validateWebsite({
-      imageUrl,
-      title,
-      price,
-      pricePerM,
-      rooms,
-      floor,
-    });
-  } catch (error: any) {
-    console.error(error.message);
-  }
+  const size =
+    parseTheRegexp(sizeDirty.children().text().split("}")[1]) || undefined;
 
-  if (
-    !imageUrl ||
-    !title ||
-    !price ||
-    !pricePerM ||
-    !rooms ||
-    !floor ||
-    !size
-  ) {
-    throw new Error("Image does not exists");
-  }
-  return {
+  const newDataObject = {
     imageUrl,
     title,
     price,
@@ -90,8 +67,14 @@ export const parseOtoDom = async (
     rooms,
     floor,
     size,
-    source: HOUSE_SOURCE.otoDom,
   };
+
+  try {
+    validateWebsite(newDataObject);
+  } catch (error: any) {
+    console.error(error.message);
+  }
+  return { ...newDataObject, source: HOUSE_SOURCE.otoDom } as CreateHouseData;
 };
 
 export const parseOLX = async (webside: Response): Promise<CreateHouseData> => {
@@ -108,31 +91,29 @@ export const parseOLX = async (webside: Response): Promise<CreateHouseData> => {
   const roomsDirty = $('li:contains("Liczba pokoi:")').text();
   const floorDirty = $('li:contains("Poziom:")').text();
   const sizeDirty = $('li:contains("Powierzchnia: ")').text();
-  const size = parseTheRegexp(sizeDirty);
-  const rooms = parseTheRegexp(roomsDirty);
+  const size = parseTheRegexp(sizeDirty) || undefined;
+  const rooms = parseTheRegexp(roomsDirty) || undefined;
   const floor = parseTheRegexp(floorDirty) || 0;
-  if (
-    !imageUrl ||
-    !title ||
-    !price ||
-    !pricePerM ||
-    !rooms ||
-    !floor ||
-    !size
-  ) {
-    throw new Error("Image does not exists");
-  }
-
-  return {
+  const newDataObject = {
     imageUrl,
     title,
     price,
-    pricePerM: extractPricePerM(pricePerM),
+    pricePerM,
     rooms,
     floor,
     size,
-    source: HOUSE_SOURCE.olx,
   };
+
+  try {
+    validateWebsite(newDataObject);
+  } catch (error: any) {
+    console.error(error.message);
+  }
+
+  return {
+    ...newDataObject,
+    source: HOUSE_SOURCE.olx,
+  } as CreateHouseData;
 };
 
 const extractPricePerM = (text: string): string => {
