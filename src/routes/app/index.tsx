@@ -7,6 +7,7 @@ import {
   addInitialPrice,
   addPrice,
   deleteHouse,
+  favoriteHouseChange,
   getHouses,
   getPrices,
 } from "~/server/db/queries";
@@ -99,12 +100,24 @@ export const useRefetchHouse = routeAction$(async (props) => {
   }
 });
 
+export const useFavoriteHouse = routeAction$(async (props) => {
+  const houseId = props.houseId as string;
+  const favoriteValue = props.favoriteValue as boolean;
+
+  try {
+    await favoriteHouseChange(houseId, favoriteValue);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 export default component$(() => {
   const userSession = useContext(UserSessionContext);
   const addAction = useAddLink();
   const deleteAction = useDeleteHouse();
   const refetchAction = useRefetchHouse();
   const housesSignal = useHousesData();
+  const favoriteAction = useFavoriteHouse();
 
   return (
     <>
@@ -141,6 +154,7 @@ export default component$(() => {
             data={house}
             deleteAction={deleteAction}
             refetchAction={refetchAction}
+            favoriteAction={favoriteAction}
             userId={userSession.userId}
           />
         ))}

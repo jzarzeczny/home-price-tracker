@@ -7,7 +7,7 @@ import BedsIcon from "./common/icons/BedsIcon";
 import FloorIcon from "./common/icons/FloorIcon";
 import AreaIcon from "./common/icons/AreaIcon";
 import ReloadIcon from "./common/icons/ReloadIcon";
-import LikeIcon from "./common/icons/LikeIcon";
+import { LikeComponentEmpty, LikeComponentFull } from "./common/icons/LikeIcon";
 import RemoveIcon from "./common/icons/RemoveIcon";
 import NoteIcon from "./common/icons/NoteIcon";
 import { HOUSE_SOURCE, type HouseData } from "~/lib/interfaces";
@@ -17,11 +17,18 @@ interface HouseCard {
   data: HouseData;
   deleteAction: ActionStore<{}, Record<string, any>, true>;
   refetchAction: ActionStore<{}, Record<string, any>, true>;
+  favoriteAction: ActionStore<{}, Record<string, any>, true>;
   userId: string;
 }
 
 export const HouseCard = component$(
-  ({ data, deleteAction, refetchAction, userId }: HouseCard) => {
+  ({
+    data,
+    deleteAction,
+    refetchAction,
+    userId,
+    favoriteAction,
+  }: HouseCard) => {
     const houseSource = (houseSource: HOUSE_SOURCE): string => {
       if (houseSource === HOUSE_SOURCE.olx) {
         return "Olx";
@@ -39,8 +46,16 @@ export const HouseCard = component$(
             height={300}
             width={300}
           />
-          <button class={styles.likeButton}>
-            <LikeIcon />
+          <button
+            class={styles.likeButton}
+            onClick$={async () =>
+              await favoriteAction.submit({
+                houseId: data.id,
+                favoriteValue: data.favorite,
+              })
+            }
+          >
+            {data.favorite ? <LikeComponentFull /> : <LikeComponentEmpty />}
           </button>
         </div>
         <div class={styles.priceContainer}>
