@@ -79,3 +79,16 @@ export const updateNote = async (
 export const deleteHouse = async (houseId: string) => {
   await supabaseClient.from("houses").delete().eq("id", houseId);
 };
+
+export const favoriteHouseChange = async (
+  houseId: string,
+  favoriteValue: boolean
+) => {
+  const updatedHouse = await supabaseClient
+    .from("houses")
+    .update({ favorite: !favoriteValue })
+    .eq("id", houseId)
+    .select();
+
+  return updatedHouse;
+};

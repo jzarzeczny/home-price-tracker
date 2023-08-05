@@ -18,6 +18,7 @@ export interface HouseData extends CreateHouseData {
   id: string;
   link: string;
   note: string;
+  favorite: boolean;
 }
 
 export interface HouseDBReturn {
