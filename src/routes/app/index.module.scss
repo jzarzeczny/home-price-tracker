@@ -77,6 +77,8 @@ input[type="submit"] {
 
   @include respond-to(smallPc) {
     margin-top: 4rem;
+    row-gap: 3rem;
+    column-gap: 2.5rem;
   }
 }
 

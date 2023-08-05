@@ -10,10 +10,10 @@ export const useUser = routeLoader$((event) => {
 });
 
 export default component$(() => {
-  // const user = useUser();
+  const user = useUser();
   return (
     <>
-      <Header />
+      <Header user={user} />
       <main class={styles.main}>
         <Slot />
         <NavMobile />

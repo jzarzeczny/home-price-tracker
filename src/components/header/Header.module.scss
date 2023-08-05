@@ -42,6 +42,7 @@
   width: 100%;
   @include respond-to(smallPc) {
     max-width: 1300px;
+    justify-content: space-between;
   }
 }
 
@@ -62,4 +63,22 @@
       font-size: 2rem;
     }
   }
+}
+
+.desktopNav {
+  display: none;
+  @include respond-to(smallPc) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
+  }
+}
+
+.button {
+  padding: 1rem 3.75rem;
+  background-color: #fff;
+  border-radius: 48px;
+  border: 1px solid #66d36e;
 }
