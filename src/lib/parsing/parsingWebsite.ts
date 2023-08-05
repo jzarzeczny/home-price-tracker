@@ -1,5 +1,6 @@
 import { load } from "cheerio";
 import { CreateHouseData, HOUSE_SOURCE } from "../interfaces/index";
+import { validateWebsite } from "./validateWebsite";
 
 const otoDomUrl = "otodom.pl" as const;
 const olxUrl = "olx.pl" as const;
@@ -57,6 +58,18 @@ export const parseOtoDom = async (
     .next();
 
   const size = parseTheRegexp(sizeDirty.children().text().split("}")[1]);
+  try {
+    validateWebsite({
+      imageUrl,
+      title,
+      price,
+      pricePerM,
+      rooms,
+      floor,
+    });
+  } catch (error: any) {
+    console.error(error.message);
+  }
 
   if (
     !imageUrl ||
