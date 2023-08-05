@@ -1,7 +1,19 @@
+@use "src/lib/styles/breakpoints.scss" as *;
+
 .addHouseForm {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @include respond-to(smallPc) {
+    position: absolute;
+    flex-direction: row;
+    justify-content: center;
+    width: 640px;
+    height: 48px;
+    top: -6rem;
+    left: 0;
+  }
 }
 .formControl {
   display: flex;
@@ -9,20 +21,32 @@
   align-items: flex-start;
   width: 100%;
 
+  @include respond-to(smallPc) {
+    height: 100%;
+  }
+
   & input[type="text"] {
     width: 100%;
     border: none;
     background-color: #eef1ee;
     padding: 1rem 1rem;
     padding-left: auto;
+    @include respond-to(smallPc) {
+      border-radius: 48px;
+    }
 
     &::placeholder {
       text-align: center;
+      @include respond-to(smallPc) {
+        text-align: start;
+        padding: 8rem;
+      }
     }
   }
 }
 
 input[type="submit"] {
+  position: relative;
   width: calc(100% - 3rem);
   max-width: 400px;
   border: none;
@@ -30,6 +54,18 @@ input[type="submit"] {
   padding: 1rem 0;
   background-color: #66d36e;
   margin: 0.75rem 1.5rem 1.5rem;
+  @include respond-to(smallPc) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 80px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 160px;
+    max-width: unset;
+    width: 160px;
+    z-index: 1;
+  }
 }
 
 .houses {
@@ -38,9 +74,20 @@ input[type="submit"] {
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
+
+  @include respond-to(smallPc) {
+    margin-top: 4rem;
+    row-gap: 3rem;
+    column-gap: 2.5rem;
+  }
 }
 
 .error {
   color: red;
   text-align: center;
+  @include respond-to(smallPc) {
+    position: absolute;
+    left: 1rem;
+    bottom: -1.5rem;
+  }
 }

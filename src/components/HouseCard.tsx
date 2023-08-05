@@ -126,7 +126,8 @@ export const HouseCard = component$(
               await updateNote(data.id, event.target.innerText);
             }}
           >
-            {data.note ?? "Super okolica i ulubiony park jest blisko"}
+            {data.note ??
+              "Zanotuj swoje spostrzeżenia tutaj. Wszystko jest automatycznie zapisywane."}
           </div>
         </div>
         <div class={styles.actionBar}>

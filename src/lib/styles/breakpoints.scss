@@ -1,0 +1,14 @@
+$breakpoints: (
+  tablet: 768px,
+  smallPc: 1024px,
+  large: 1400px,
+);
+
+// Mixin to apply styles based on resolution
+@mixin respond-to($breakpoint) {
+  $breakpointValue: map-get($breakpoints, $breakpoint);
+
+  @media only screen and (min-width: $breakpointValue) {
+    @content;
+  }
+}

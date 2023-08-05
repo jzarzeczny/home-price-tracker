@@ -12,7 +12,7 @@ import {
 } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
 
-import "./global.css";
+import "~/lib/styles/index.scss";
 import { supabaseClient } from "./server/db/client";
 import type { Session } from "supabase-auth-helpers-qwik";
 import type { AuthChangeEvent } from "@supabase/supabase-js";
