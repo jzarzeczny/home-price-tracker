@@ -1,7 +1,6 @@
 import { load } from "cheerio";
 import { CreateHouseData, HOUSE_SOURCE } from "../interfaces/index";
 import { validateWebsite } from "./validateWebsite";
-import { launch } from "puppeteer";
 const otoDomUrl = "otodom.pl" as const;
 const olxUrl = "olx.pl" as const;
 
@@ -13,7 +12,6 @@ export const parseWebsite = async (
 ): Promise<CreateHouseData> => {
   const url = new URL(link).host;
   let parsedData: CreateHouseData;
-
   if (url.includes(otoDomUrl)) {
     parsedData = await parseOtoDom(website);
   } else if (url.includes(olxUrl)) {
